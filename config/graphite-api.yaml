@@ -1,0 +1,54 @@
+functions:
+  - graphite_api.functions.SeriesFunctions
+  - graphite_api.functions.PieFunctions
+
+finders:
+  - graflux.graphite.InfluxDBFinder
+
+logging:
+  loggers:
+    graflux:
+      handers:
+        - raw
+      level: DEBUG
+
+graflux:
+  steps:
+    # - [3600, 1]
+    # - [86400, 30]
+    - [259200, 60]
+    - [604800, 300]
+    - [1209600, 600]
+    - [2419200, 900]
+    - [4838400, 1800]
+    - [9676800, 3600]
+    - [31536000, 7200]
+    - [126144000, 43200]
+
+  aggregates:
+    - [\.sum$, sum]
+    - [\.count$, sum]
+    - [\.received$, sum]
+    - [.*, mean]
+
+  influxdb:
+    host: localhost
+    port: 8086
+    user: root
+    password: root
+    db: graphite
+    ssl: False
+
+  index:
+    build_interval: 900
+    load_interval: 300
+
+    ## file | redis | memcached
+    storage: file
+
+    ## If using file storage
+    path: /tmp
+
+    ## If using Redis / Memcached storage
+    host:
+    port:
