@@ -34,6 +34,9 @@ class QueryEngineTest(unittest.TestCase):
         self.metric_lookup.storage.release_update_lock()
         self.clean_db()
 
+    def tearDown(self):
+        self.metric_lookup.stop_background_refresh()
+
     def clean_db(self):
         try:
             self.client.drop_database(self.db)
@@ -62,13 +65,11 @@ class QueryEngineTest(unittest.TestCase):
 
         self.metric_lookup.start_background_refresh()
 
-        time.sleep(10)  # allow background threads time to process
+        time.sleep(8)  # allow background threads time to process
 
         six.assertCountEqual(self, self.metric_lookup.query('test.series.*'), [
             {'is_leaf': True, 'metric': metric} for metric in metrics
         ])
-
-        self.metric_lookup.stop_background_refresh()
 
 if __name__ == '__main__':
     unittest.main()
