@@ -61,8 +61,6 @@ The aggregate function used is determined by matching the regexs defined in `agg
 
 NOTE: for protection against killing `graphite-api` and `grafana`, `graflux` always uses an aggregate query with a group clause so it is important to at least configure `aggregates` to match your metric naming conventions. Additionally `InfluxDB` has a 10,000 data point limit on queries so I recommend using the example `steps` config or tweaking it to your liking, currently no provision is made for loading more than 10,000 data points per series from `InfluxDB`, you'll simply see truncated data.
 
-steps config:
-
 ## License
 
 MIT
