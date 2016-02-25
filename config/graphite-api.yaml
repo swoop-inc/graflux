@@ -1,0 +1,73 @@
+# Include all graphite functions, not required for graflux
+functions:
+  - graphite_api.functions.SeriesFunctions
+  - graphite_api.functions.PieFunctions
+
+# Tell graphite-api to use graflux to find metrics
+finders:
+  - graflux.graphite.InfluxDBFinder
+
+# Graflux specific configuration
+graflux:
+
+  # Step lookup table.
+  #
+  # Format is a list of [<time_span>, <group_time>]. All times in seconds.
+  #
+  # If the time span of a request for data is less than or equal to the time_range
+  # then the data will be grouped by the second value. This table is walked in order so it should be sorted by the
+  # time range.
+  steps:
+    # - [3600, 1]
+    # - [86400, 30]
+    - [259200, 60]
+    - [604800, 300]
+    - [1209600, 600]
+    - [2419200, 900]
+    - [4838400, 1800]
+    - [9676800, 3600]
+    - [31536000, 7200]
+    - [126144000, 43200]
+
+  # Aggregates configuration
+  #
+  # Format is a list of [<metric_regex, <aggregate_func>]
+  #
+  # metrics_regex: any string than can be interpretted as a Python regex
+  # aggregate_finc: any aggregate function that InfluxDB supports
+  #
+  # Metrics are checked against each regex in the order defined here, the first match selects the aggregate function.
+  # If a metric matches no regex then 'mean' is used.
+  aggregates:
+    - [\.sum$, sum]
+    - [\.count$, sum]
+    - [\.received$, sum]
+    - [.*, mean]
+
+  # InfluxDB client configuration
+  influxdb:
+    host: localhost
+    port: 8086
+    user: root
+    password: root
+    db: graphite
+    ssl: False
+
+  # Metric Index Configuration
+  index:
+    # How often in seconds to rebuild the index
+    build_interval: 900
+
+    # How often in second to reload the index from disk. Generally should be smaller than `build_interval`
+    # and `build_interval + load_interval` defines the max amount of time the index will be stale.
+    load_interval: 300
+
+    ## file | redis | memcached (NOTE: only `file` is currently implemented)
+    storage: file
+
+    ## If using file storage defines where the index and lock file will be stored on disk
+    path: /tmp
+
+    ## If using Redis / Memcached storage (NOTE: only `file` is currently implemented)
+    host:
+    port:

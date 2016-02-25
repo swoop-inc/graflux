@@ -1,0 +1,19 @@
+language: python
+python:
+  - "2.7"
+  - "3.5"
+  - "pypy"
+
+env:
+  - INFLUX_VERSION=0.9.6.1
+  - INFLUX_VERSION=0.10.0-1
+
+before_install:
+  - wget http://s3.amazonaws.com/influxdb/influxdb_${INFLUX_VERSION}_amd64.deb
+  - sudo dpkg -i influxdb_${INFLUX_VERSION}_amd64.deb
+  - travis_retry sudo service influxdb restart
+  - sudo service influxdb status
+
+install: "pip install -r requirements.txt"
+
+script: make test
