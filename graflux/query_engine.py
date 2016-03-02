@@ -17,7 +17,9 @@ class QueryEngine(object):
 
         self.config = config
         self.aggregate_dict = None
-        self.steps = config.get('steps', {})
+        self.steps = config.get('steps', [])
+
+        self.minimum_step = self.steps[0][1] if self.steps else 10  # reasonable default?
 
     def query(self, metrics, start_time, end_time):
         step = self.determine_interval(start_time, end_time)
@@ -72,10 +74,10 @@ class QueryEngine(object):
     def determine_interval(self, start_time, end_time):
         span = end_time - start_time
 
-        final_step = 60  # TODO make configurable, should match minimum data resolution
+        final_step = self.minimum_step
 
         for limit, step in self.steps:
-            if span >= limit and step > final_step:
+            if span >= limit:
                 final_step = step
             else:
                 break

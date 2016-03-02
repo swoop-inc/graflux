@@ -24,6 +24,7 @@ class QueryEngineTest(unittest.TestCase):
                 ['.*', 'mean']
             ],
             'steps': [
+                [1000, 60],
                 [5000, 300],
                 [10000, 600]
             ]

@@ -36,7 +36,7 @@ One thing that is interesting to explore is `pypy` I haven't tested it with `gra
 
 #### Pre-aggregate calculation
 
-Since Influx is efficient at storing high resolution data for long periods of time we generally don't pre-compute roll ups, but this can create issues when querying long time periods. For example if you collect data every 10s you don't want to have to load 8640 * 31 samples to graph data for 1 month. `graflux` can have `Influxdb` do an initial rollup before sending the data to avoid massive IO and `graphite-api` process time.
+Since Influx is efficient at storing high resolution data for long periods of time we generally don't pre-compute roll ups, but this can create issues when querying long time periods. For example if you collect data every 10s you don't want to have to load 86400 * 31 samples to graph data for 1 month. `graflux` can have `Influxdb` do an initial rollup before sending the data to avoid massive IO and `graphite-api` process time.
 
 To configure this use the `steps` and `aggregates` configuration, this is fairly similar to setting up retention and aggregates in `carbon`.
 
@@ -52,12 +52,12 @@ config:
     - [1209600, 600]
   aggregates:
     - [\.count$, sum]
-    - [.*, mean]
+    - [\.gauge$, last]
 ```
 
-A request from graphite-api for the last 24h of data for a metric will use a 10s group time, determined by comparing the time span of the query against the lookup table in `steps`. A query for 48hrs would instead use 60s as the group time, etc.
+A request from graphite-api for up to 1 day (86400s) of data for a metric will use a 10s group time, determined by comparing the time span of the query against the lookup table in `steps`. A query for between 1 and 3 days (259200s) of data would instead use 60s as the group time, etc.
 
-The aggregate function used is determined by matching the regexs defined in `aggregates` against the metric name, first match wins. So `test.metric.count` will use `sum`, `test.metric.other` will use `mean`, if no match is found then `mean` is used.
+The aggregate function used is determined by matching the regexes defined in `aggregates` against the metric name, first match wins. So `test.metric.count` will use `sum`, `test.metric.gauge$` will use `last`, if no match is found then `mean` is used by default.
 
 NOTE: for protection against killing `graphite-api` and `grafana`, `graflux` always uses an aggregate query with a group clause so it is important to at least configure `aggregates` to match your metric naming conventions. Additionally `InfluxDB` has a 10,000 data point limit on queries so I recommend using the example `steps` config or tweaking it to your liking, currently no provision is made for loading more than 10,000 data points per series from `InfluxDB`, you'll simply see truncated data.
 
