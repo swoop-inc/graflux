@@ -1,4 +1,4 @@
-# Graflux
+# Graflux [![Build Status](https://travis-ci.org/swoop-inc/graflux.svg?branch=master)](https://travis-ci.org/swoop-inc/graflux)
 
 An `influxdb` storage adapter for `graphite-api`.
 
