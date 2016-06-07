@@ -56,10 +56,9 @@ class QueryEngineTest(unittest.TestCase):
         self.assertTrue(self.client.write_points(data))
 
     def test_background_update(self):
-        metrics = [
-            'test.series.one',
-            'test.series.two'
-        ]
+        # awkwardly large number here but Influx has done a few odd things with pagination of
+        # SHOW SERIES in the past and we want to ensure we aren't being silently limited in the result set
+        metrics = ['test.series.test{0}'.format(x) for x in range(0, 100000)]
 
         self.create_test_data(metrics)
 
@@ -67,9 +66,7 @@ class QueryEngineTest(unittest.TestCase):
 
         time.sleep(8)  # allow background threads time to process
 
-        six.assertCountEqual(self, self.metric_lookup.query('test.series.*'), [
-            {'is_leaf': True, 'metric': metric} for metric in metrics
-        ])
+        self.assertEqual(len(self.metric_lookup.query('test.series.*')), 100000)
 
 if __name__ == '__main__':
     unittest.main()

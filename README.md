@@ -20,9 +20,7 @@ We're using `graflux` in production with a fairly large setup, ~400k metrics in 
 
 Under production load only python 2.7 + InfluxDB 0.9.x have been beat on.
 
-Python 2.7, 3.5 and pypy are tested against InfluxDB 0.9.x + 0.10.0 in the test suite and are planned to be fully supported.
-
-At present, I'm pretty sure there will be issues building large indexes on InfluxDB 0.10.0 due to changes in how `show series` queries are handled. Proper support for `0.10.0` will be added after that release stabilizes a bit but PRs are welcome if anyone is already using it.
+Python 2.7, 3.5 and pypy are tested against InfluxDB 0.9.x and 0.10.2 in the test suite and are planned to be fully supported.
 
 One thing that is interesting to explore is `pypy` I haven't tested it with `graphite-api` yet but in isolated benchmarks against the metric index build/load/query it is 5-10x faster than CPython.
 
