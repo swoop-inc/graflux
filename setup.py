@@ -7,7 +7,7 @@ if sys.version_info >= (3,):
 
 setup(
     name='graflux',
-    version='0.1.0',
+    version='0.2.0',
     url='https://github.com/swoop-inc/graflux',
     license='mit',
     author='Mark Bell',
@@ -19,7 +19,7 @@ setup(
     include_package_data=True,
     platforms='any',
     classifiers=(),
-    install_requires=['graphite_api', 'influxdb>=2.6.0'],
+    install_requires=['graphite_api', 'influxdb>=2.12.0'],
     extras_require={},
     **convert_2_to_3
 )

@@ -5,11 +5,12 @@ python:
   - "pypy"
 
 env:
-  - INFLUX_VERSION=0.9.6.1
-  - INFLUX_VERSION=0.10.0-1
+  - INFLUX_VERSION=0.9.6.1 INFLUX_URL=http://s3.amazonaws.com/influxdb/influxdb_0.9.6.1_amd64.deb
+  - INFLUX_VERSION=0.10.0-1 INFLUX_URL=http://s3.amazonaws.com/influxdb/influxdb_0.10.0-1_amd64.deb
+  - INFLUX_VERSION=0.13.0 INFLUX_URL=https://dl.influxdata.com/influxdb/releases/influxdb_0.13.0_amd64.deb
 
 before_install:
-  - wget http://s3.amazonaws.com/influxdb/influxdb_${INFLUX_VERSION}_amd64.deb
+  - curl -L -O ${INFLUX_URL}
   - sudo dpkg -i influxdb_${INFLUX_VERSION}_amd64.deb
   - travis_retry sudo service influxdb restart
   - sudo service influxdb status
