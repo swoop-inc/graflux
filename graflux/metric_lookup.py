@@ -95,7 +95,7 @@ class MetricLookup(object):
         if storage.try_acquire_update_lock():
             log.info('index.build.lock_acquired')
 
-            data = query_engine.show_series()
+            data = query_engine.get_series()
 
             index = MetricIndex()
             for metric in data:
