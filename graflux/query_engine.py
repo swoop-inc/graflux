@@ -60,8 +60,8 @@ class QueryEngine(object):
 
         return result
 
-    def show_series(self):
-        data = self.client.query('SHOW SERIES')
+    def get_series(self):
+        data = self.client.query('SHOW MEASUREMENTS')
 
         if 'series' not in data.raw:
             return []

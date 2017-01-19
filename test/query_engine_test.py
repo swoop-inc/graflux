@@ -52,12 +52,12 @@ class QueryEngineTest(unittest.TestCase):
 
         self.assertTrue(self.client.write_points(data))
 
-    def test_show_series_empty_db(self):
+    def test_get_series_empty_db(self):
         self.clean_db()
-        result = self.query_engine.show_series()
+        result = self.query_engine.get_series()
         six.assertCountEqual(self, result, [])
 
-    def test_show_series(self):
+    def test_get_series(self):
         metrics = [
             'test.series.one',
             'test.series.two'
@@ -65,7 +65,7 @@ class QueryEngineTest(unittest.TestCase):
         self.clean_db()
         self.create_test_data(metrics)
 
-        result = self.query_engine.show_series()
+        result = self.query_engine.get_series()
 
         six.assertCountEqual(self, result, metrics)
 
