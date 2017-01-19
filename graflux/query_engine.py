@@ -1,7 +1,5 @@
 from influxdb import InfluxDBClient
 from collections import OrderedDict
-import requests
-from distutils.version import LooseVersion
 
 import re
 
@@ -9,8 +7,6 @@ import re
 
 # TODO makes sense to abstract this to allow cacheable wrapper implementations
 class QueryEngine(object):
-
-    INFLUX_0_11 = LooseVersion('0.11.0')
 
     def __init__(self, config):
         influx_config = config.get('influxdb', {})
@@ -31,13 +27,6 @@ class QueryEngine(object):
         self.steps = config.get('steps', [])
 
         self.minimum_step = self.steps[0][1] if self.steps else 10  # reasonable default?
-
-        # This is a workaround for the Influx driver not supporting the `/ping` endpoint
-        # correctly, we need the URL so we can hit it directly.
-        self.influx_url = 'https://' if ssl else 'http://'
-        self.influx_url = self.influx_url + host + ':' + str(port)
-
-        self.influx_version = None
 
     def query(self, metrics, start_time, end_time):
         step = self.determine_interval(start_time, end_time)
@@ -66,23 +55,9 @@ class QueryEngine(object):
         if 'series' not in data.raw:
             return []
 
-        # Influx changed the result format of `SHOW SERIES` in the 0.11 release
-        if self.get_influx_version() >= self.INFLUX_0_11:
-            return (v[0] for v in data.raw['series'][0]['values'])
-        else:
-            return (r['name'] for r in data.raw['series'])
+        return (v[0] for v in data.raw['series'][0]['values'])
 
     # Private
-
-    def get_influx_version(self):
-        # It appears that the influx python driver does not like the 204 response of the `/ping`
-        # endpoint so we're sending the request directly.
-        if not self.influx_version:
-            version_string = requests.get(self.influx_url + '/ping').headers['X-Influxdb-Version']
-            self.influx_version = LooseVersion(version_string)
-
-        return self.influx_version
-
 
     def build_aggregate_dict(self):
         self.aggregate_dict = OrderedDict(
