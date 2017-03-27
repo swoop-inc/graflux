@@ -1,6 +1,6 @@
 import time
 
-from .metric_lookup import MetricLookup
+from .graflux_index_lookup import GrafluxIndexLookup
 from graphite_api.intervals import Interval, IntervalSet
 from graphite_api.node import LeafNode, BranchNode
 from .query_engine import QueryEngine
@@ -33,10 +33,10 @@ class InfluxDBFinder(object):
     def __init__(self, config=None):
         self.config = config.get('graflux', {})
 
-        self.metric_lookup = MetricLookup(self.config)
         self.query_engine = QueryEngine(self.config)
-
-        self.metric_lookup.start_background_refresh()
+        self.metric_lookup = GrafluxIndexLookup(self.config)
+        # self.metric_lookup = MetricLookup(self.config)
+        # self.metric_lookup.start_background_refresh()
 
     def find_nodes(self, query):
         paths = self.metric_lookup.query(query.pattern)

@@ -7,7 +7,7 @@ if sys.version_info >= (3,):
 
 setup(
     name='graflux',
-    version='0.3.0',
+    version='0.4.0',
     url='https://github.com/swoop-inc/graflux',
     license='mit',
     author='Mark Bell',
