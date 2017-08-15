@@ -21,7 +21,7 @@ class FileStorage(object):
             with open(self.index_file_path(), 'r') as f:
                 return f.read()
         except IOError as e:
-            log.error('index.file.read.exception', exception=e)
+            log.error('index.file.read.exception', exc_info=e)
             return False
 
     def save(self, data):
@@ -54,7 +54,7 @@ class FileStorage(object):
         except OSError as e:
             log.warn('index.file.lock_collision',
                      note="Normal if this happens occasionally but should not be common",
-                     exception=e)
+                     exc_info=e)
             return False
 
     def delete_index(self):
@@ -62,14 +62,14 @@ class FileStorage(object):
             os.remove(self.index_file_path())
         except OSError as e:
             # Likely file not present, which is OK, log in case it's permissions or other
-            log.warn('index.file.delete_index_file.exception', exception=e)
+            log.warn('index.file.delete_index_file.exception', exc_info=e)
 
     def release_update_lock(self):
         try:
             os.remove(self.lock_file_path())
         except OSError as e:
             # Likely file not present, which is OK, log in case it's permissions or other
-            log.warn('index.file.delete_lock_file.exception', exception=e)
+            log.warn('index.file.delete_lock_file.exception', exc_info=e)
 
     def index_file_path(self):
         return os.path.join(self.path, FileStorage.INDEX_FILE_NAME)

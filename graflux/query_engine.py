@@ -1,5 +1,6 @@
 from influxdb import InfluxDBClient
 from collections import OrderedDict
+from six.moves import xrange
 
 import re
 
@@ -41,11 +42,12 @@ class QueryEngine(object):
         }
 
         for agg, metrics in query_sets.items():
-            series_list = ', '.join(['"%s"' % path for path in metrics])
-            influx_query = self.build_influx_query(series_list, start_time, end_time, agg, step)
-            data = self.client.query(influx_query, {'epoch': 's'})
-            for key in data.keys():
-                result['series'][key[0]] = [d['value'] for d in data.get_points(key[0])]
+            for batch in self.batch_metrics(metrics):
+                series_list = ', '.join(['"%s"' % path for path in batch])
+                influx_query = self.build_influx_query(series_list, start_time, end_time, agg, step)
+                data = self.client.query(influx_query, {'epoch': 's'})
+                for key in data.keys():
+                    result['series'][key[0]] = [d['value'] for d in data.get_points(key[0])]
 
         return result
 
@@ -58,6 +60,10 @@ class QueryEngine(object):
         return (v[0] for v in data.raw['series'][0]['values'])
 
     # Private
+
+    def batch_metrics(self, metrics):
+        size = 250
+        return (metrics[pos:pos + size] for pos in xrange(0, len(metrics), size))
 
     def build_aggregate_dict(self):
         self.aggregate_dict = OrderedDict(
